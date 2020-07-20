@@ -7,8 +7,8 @@ import alunos
 
 if __name__ == '__main__':
     img = folhaPresenca.carregaImagem()
-    codigoAula = CB.processaCodigoBarras(img)
     img = folhaPresenca.corrigeAlinhamento(img)
+    codigoAula = CB.processaCodigoBarras(img)
     NUM_SAMPLES = alunos.carregaNumerosSamples()
     todosAlunos, alunosPresentes = alunos.processaAlunos(img)
     csv.criaCSVFile(alunosPresentes, codigoAula)
