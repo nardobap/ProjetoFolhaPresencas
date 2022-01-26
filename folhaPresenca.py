@@ -7,10 +7,10 @@ import imutils
 IMGX = utils.IMGX
 IMGY = utils.IMGY
 
-def carregaImagem():
+def carregaImagem(imgdir):
     #carrega a iamgem da folha de presenças com o formato RGB
-    if len(sys.argv) > 1:
-        img = cv2.imread(str(sys.argv[1]))
+    if len(imgdir) > 1:
+        img = cv2.imread(imgdir)
         if img is not None:
             #aplica um redimensionamento à imagem.
             img = cv2.resize(img, (utils.IMGX, utils.IMGY))
@@ -20,7 +20,7 @@ def carregaImagem():
         quit("erro ao carregar folha de presença")
     return img
 
-def corrigeAlinhamento(img):
+def corrigeAlinhamento(img,out_leitura_cabecalho,out_alinhamento):
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(imgGray, 150, 255, cv2.THRESH_BINARY_INV)
     contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
@@ -36,41 +36,45 @@ def corrigeAlinhamento(img):
                 roi = img[y:y + h, x:x + w]
                 todosContornos.append(roi)
 
-        cabecalho = todosContornos[0]
+        if todosContornos == []: # verificar se o array tem elementos
+            print("Folha ilegível, falha na leitura do cabecalho")  # se der erro sai fora
+            out_leitura_cabecalho = out_leitura_cabecalho + 1
+        else:
+            cabecalho = todosContornos[0]
+            grayCabecalho = cv2.cvtColor(cabecalho, cv2.COLOR_BGR2GRAY)
+            grayCabecalho = np.float32(grayCabecalho)
+            corners = cv2.goodFeaturesToTrack(grayCabecalho, 500, 0.02, 20)
+            corners = np.int0(corners)
+            if len(corners) > 0:
+                leftCorners = []
+                rightCorners = []
+                larguraCabecalho = cabecalho.shape[1]
 
-        grayCabecalho = cv2.cvtColor(cabecalho, cv2.COLOR_BGR2GRAY)
-        grayCabecalho = np.float32(grayCabecalho)
-        corners = cv2.goodFeaturesToTrack(grayCabecalho, 500, 0.02, 20)
-        corners = np.int0(corners)
-        if len(corners) > 0:
-            leftCorners = []
-            rightCorners = []
-            larguraCabecalho = cabecalho.shape[1]
+                for corner in corners:
+                    x, y = corner.ravel()
+                    if x < 50:
+                        leftCorners.append(y)
+                    if x > (larguraCabecalho - 50):
+                        rightCorners.append(y)
+                leftCorners.sort()
+                rightCorners.sort()
+                leftCorner = leftCorners[0]
+                rightCorner = rightCorners[0]
+                correcao = 0
+                if leftCorner > rightCorner:
+                    correcao = -leftCorner
+                if rightCorner > leftCorner:
+                    correcao = rightCorner
 
-            for corner in corners:
-                x, y = corner.ravel()
-                if x < 50:
-                    leftCorners.append(y)
-                if x > (larguraCabecalho - 50):
-                    rightCorners.append(y)
-            leftCorners.sort()
-            rightCorners.sort()
-            leftCorner = leftCorners[0]
-            rightCorner = rightCorners[0]
-            correcao = 0
-            if leftCorner > rightCorner:
-                correcao = -leftCorner
-            if rightCorner > leftCorner:
-                correcao = rightCorner
+                correcao = correcao * 0.033
+                print("correcao ->" + str(correcao))
+                img = imutils.rotate(img, correcao)
+                img = img[int(IMGY * 0.05):IMGY - int(IMGY * 0.05), int(IMGX * 0.02):IMGX - int(IMGX * 0.02)]
 
-            correcao = correcao * 0.033
-            print("correcao ->" + str(correcao))
-            img = imutils.rotate(img, correcao)
-            img = img[int(IMGY * 0.05):IMGY - int(IMGY * 0.05), int(IMGX * 0.02):IMGX - int(IMGX * 0.02)]
-
-    else:
-        quit("Folha ilegível, falha no alinhamento")
-    return img
+            else:
+                print("Folha ilegível, falha no alinhamento")
+                out_alinhamento = out_alinhamento + 1
+    return img,out_leitura_cabecalho,out_alinhamento
 
 def filtroDeLinhas(img):
     #passa a imagem para uma escala de cinzento e de seguida converte para o inverso.
@@ -129,23 +133,26 @@ def encontraTabelasAlunos(img, linhas):
                     temp = roiAlunosLinhas[0]
                     roiAlunosLinhas[0] = roiAlunosLinhas[1]
                     roiAlunosLinhas[1] = temp
+        try:
+            if (roiAlunos[0].shape[1] > IMGX * 0.65):
+                largura = roiAlunos[0].shape[1];
+                altura = roiAlunos[0].shape[0]
+                roi1 = roiAlunos[0][0:altura, 0:int(largura / 2)]
+                roi2 = roiAlunos[0][0:altura, int(largura / 2):largura]
+                roiAlunos = []
+                roiAlunos.append(roi1)
+                roiAlunos.append(roi2)
 
-        if (roiAlunos[0].shape[1] > IMGX * 0.65):
-            largura = roiAlunos[0].shape[1];
-            altura = roiAlunos[0].shape[0]
-            roi1 = roiAlunos[0][0:altura, 0:int(largura / 2)]
-            roi2 = roiAlunos[0][0:altura, int(largura / 2):largura]
-            roiAlunos = []
-            roiAlunos.append(roi1)
-            roiAlunos.append(roi2)
-
-            (x, y, w, h) = roiAlunosLinhas[0]
-            roiLinhas1 = (x, y, int(w / 2), h)
-            roiLinhas2 = (int(w / 2), y, w, h)
-            roiAlunosLinhas = []
-            roiAlunosLinhas.append(roiLinhas1)
-            roiAlunosLinhas.append(roiLinhas2)
+                (x, y, w, h) = roiAlunosLinhas[0]
+                roiLinhas1 = (x, y, int(w / 2), h)
+                roiLinhas2 = (int(w / 2), y, w, h)
+                roiAlunosLinhas = []
+                roiAlunosLinhas.append(roiLinhas1)
+                roiAlunosLinhas.append(roiLinhas2)
+        except:
+            print("Folha ilegível, não foi possivel encontrar nenhuma tabela de alunos")
     else:
-        quit("Folha ilegível, não foi possivel encontrar nenhuma tabela de alunos")
+        print("Folha ilegível, não foi possivel encontrar nenhuma tabela de alunos")
+        #out_tabela_alunos = out_tabela_alunos + 1
 
     return roiAlunos, roiAlunosLinhas
