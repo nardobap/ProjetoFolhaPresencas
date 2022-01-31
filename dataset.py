@@ -326,14 +326,3 @@ dataset_array_teste.head()
 pd.DataFrame(dataset_array_teste).to_csv("./input/novoteste.csv", index=False)
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
