@@ -219,25 +219,6 @@ print(confusion_matrix(y_test, y_pred))
 print(f"\n")
 
 
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
 
 
 
