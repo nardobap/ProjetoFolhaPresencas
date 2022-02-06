@@ -1,10 +1,9 @@
 # ProjetoFolhaPresencas
 
-## Projecto Licenciatura DEIS-ISEC
-
+### Projecto Licenciatura DEIS-ISEC
 ### Bernardo Baptista - 2018013802
-
-# Table of Contents
+***
+## Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [User's manual](#users-manual)
 3. [Third Example](#third)
