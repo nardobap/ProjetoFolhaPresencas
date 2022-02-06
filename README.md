@@ -4,9 +4,9 @@
 ### Bernardo Baptista - 2018013802
 ***
 ## Table of Contents
-1. [Prerequisites](#prerequisites)
-2. [User's manual](#users-manual)
-3. [Third Example](#third)
+1. [Prerequisites](#project-description)
+2. [Project description](#users-manual)
+3. [User's manual](#users-manual)
 4. [Fourth Example](#fourth)
 
 
@@ -37,10 +37,15 @@ It's useful to have all the frameworks used available at your local machine if y
 It is also required to have Tessaract installed: [Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html)
 
 
-## User's manual
-yada
+## Project description
+Input: One or more images of attendance sheets;
+Ouput: A .csv file with the students present in a given lesson.
 
-## third
+The aim of this project is to develop a functional prototype for reading, through computer vision, of attendance sheets in classes. The IPC uses in all its schools the management system NONIO, developed by the company XWS - eXpress Web Solutions. The goal is to automate the process of recognizing signatures on attendance sheets and validate attendance. The application's primary goal is to identify the students that were present in each class and that have signed the attendance sheet.
+
+This project will be combined with another to establish the connection of the application to the NONIO system. This means that the output of this program will be redirected to an API that will automatically register the students present in each class. That was or will be developed, in parallel, to route the data regarding the presence of the students in class to the NONIO system, so these features are not relevant in this project.
+
+## User's manual
 yada
 
 ## fourth
