@@ -6,7 +6,7 @@
 
 # Table of Contents
 1. [Prerequisites](#prerequisites)
-2. [User's manual](#user's manual)
+2. [User's manual](#users-manual)
 3. [Third Example](#third)
 4. [Fourth Example](#fourth)
 
