@@ -38,8 +38,8 @@ It is also required to have Tessaract installed: [Tesseract](https://tesseract-o
 
 
 ## Project description
-Input: One or more images of attendance sheets;
-Ouput: A .csv file with the students present in a given lesson.
+* Input: One or more images of attendance sheets;
+* Ouput: A .csv file with the students present in a given lesson.
 
 The aim of this project is to develop a functional prototype for reading, through computer vision, of attendance sheets in classes. The IPC uses in all its schools the management system NONIO, developed by the company XWS - eXpress Web Solutions. The goal is to automate the process of recognizing signatures on attendance sheets and validate attendance. The application's primary goal is to identify the students that were present in each class and that have signed the attendance sheet.
 
