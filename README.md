@@ -5,16 +5,12 @@
 ### Bernardo Baptista - 2018013802
 
 # Table of Contents
-1. [Example](#example)
-2. [Example2](#example2)
-3. [Third Example](#third-example)
-4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+1. [Prerequisites](#prerequisites)
+2. [User's manual](#user's manual)
+3. [Third Example](#third)
+4. [Fourth Example](#fourth)
 
 
-## Example
-## Example2
-## Third Example
-## [Fourth Example](http://www.fourthexample.com) 
 
 #### Previous work: [GitHub](https://github.com/renatogomes17/ProjetoFolhaPresencas)
 
@@ -27,7 +23,11 @@ It's useful to have all the frameworks used available at your local machine if y
 It is also required to have Tessaract installed: [Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html)
 
 
+## User's manual
+yada
 
+##third
+yada
 
-
-
+##fourth
+yada
