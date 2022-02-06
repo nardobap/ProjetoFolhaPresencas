@@ -26,8 +26,8 @@ It is also required to have Tessaract installed: [Tesseract](https://tesseract-o
 ## User's manual
 yada
 
-##third
+## third
 yada
 
-##fourth
+## fourth
 yada
