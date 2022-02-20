@@ -46,7 +46,12 @@ The aim of this project is to develop a functional prototype for reading, throug
 This project will be combined with another to establish the connection of the application to the NONIO system. This means that the output of this program will be redirected to an API that will automatically register the students present in each class. That was or will be developed, in parallel, to route the data regarding the presence of the students in class to the NONIO system, so these features are not relevant in this project.
 
 ## User's manual
-yada
+The program is executed from the command line: 
+>$ python main.py [path]
+The argument with the directory path is optional. If left blank, the program starts from the project directory where the program runs. If a specific directory is entered, it is validated, and all subdirectories are scrolled through. If valid, it puts in an array all the file addresses that correspond to files of type .jpeg. Otherwise, the programme ends
+
+Checks if the file "modelsignature.joblib" that corresponds to the model for classifying signatures exists in the directory or its subdirectories. If the file does not exist, the model is trained using the datasets - make sure they are in the root directory of the project in a folder called "input".
+
 
 ## fourth
 yada
