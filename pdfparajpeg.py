@@ -26,7 +26,7 @@ def find_pdf(fdir):
 
 # count = 1
 
-# arfiles = find_pdf("/home/bernardo/Desktop/projeto/resolucaovaria/600")
+# arfiles = find_pdf("/home/nardo/Desktop/ProjetoFolhaPresencas/teste")
 # print(len(arfiles))
 # print(numpy.transpose(arfiles))
 
@@ -34,7 +34,7 @@ def find_pdf(fdir):
 #     print("getting " + i)
 #     pages = convert_from_path(i)
 #     for page in pages:
-#         page.save('p' + str(count) + 'res600.jpg', 'JPEG')
+#         page.save('p' + str(count) + '.jpg', 'JPEG')
 #         print(count)
 #         count += 1
 

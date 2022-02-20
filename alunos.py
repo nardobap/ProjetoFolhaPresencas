@@ -5,6 +5,10 @@ import numpy as np
 import folhaPresenca
 import pytesseract
 import folhaFinal as ff
+from joblib import load, dump
+import sklearn
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
 
 
 IMGX = utils.IMGX
@@ -76,32 +80,39 @@ def confirmaAssinatura(assinatura):
     return coord
 
 
-def verificaAssinatura(assinatura, codigoAula, nassin):
-    #Verifica se existe uma assiantura para um dado aluno primeiro pela percentagem de pixeis e depois, se necessário pelo tamanho da assinatura
-    assinaturaGrey = cv2.cvtColor(assinatura, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(assinaturaGrey, 200, 255, cv2.THRESH_BINARY_INV)
-    #file_assinatura= str(codigoAula) + str(nassin) + ".jpg"
+def verificaAssinatura(assinatura):
     assinado = False
-    incerto = False
-    percentagemAssinado = (cv2.countNonZero(thresh) * 100) / thresh.size
-    if percentagemAssinado > 10:
-        assinado = True
-        #write true
-        #cv2.imwrite("./assinaturas/presente/" +str(file_assinatura), assinaturaGrey)
-    if percentagemAssinado <= 10 and percentagemAssinado >= 3:
-        (x, y, w, h) = confirmaAssinatura(assinatura)
-        if w > assinatura.shape[1] * 0.20 and h > assinatura.shape[0] * 0.4:
-            assinado = True
-            #write true
-            #cv2.imwrite("./assinaturas/presente/"+str(file_assinatura), assinaturaGrey)
-        else:
-            incerto = True
-            #write incerto
-            #cv2.imwrite("./assinaturas/incerto/"+str(file_assinatura), assinaturaGrey)
-    #write false
-    #if assinado == False and incerto == False:
-        #cv2.imwrite("./assinaturas/ausente/" + str(file_assinatura), assinaturaGrey)
-    return assinado, incerto
+    #dar tamanho fixo
+    img_sized = cv2.resize(assinatura, (215,30))
+    #converter para um canal BW
+    gray = cv2.cvtColor(img_sized, cv2.COLOR_BGR2GRAY)
+    #blur - reduzir ruído e contornos
+    blur = cv2.GaussianBlur(gray, (3,3), 0)
+    #truncar pixels abaixo de valor - redução de ruido
+    ret, thresh = cv2.threshold(blur, 240, 255, cv2.THRESH_TRUNC)
+    
+    #TODO:
+    #COLOCAR AQUI CODIGO
+    # percorre a imagem da assinatura e soma as linhas e as colunas
+    sum_of_rows = np.sum(thresh, axis = 1)
+    sum_of_columns = np.sum(thresh, axis = 0)
+    
+    #concatena as somas e transpoe para vector
+    vector_img = np.concatenate((sum_of_rows, sum_of_columns))
+    signature = np.transpose(vector_img)
+    
+    # standardiza os valores das somas
+    X_test = StandardScaler().fit_transform(signature)
+    print(X_test)
+    
+    #carrega o modelo
+    mlp = load("modelsignature.joblib")
+    
+    #devolve a label atribuida
+    assinado = mlp.predict(X_test)
+    
+    return assinado
+
 
 
 def extraiLinhasAlunosIndividual(linhasHorizontais, roiAlunosLinhas):
@@ -142,8 +153,6 @@ def processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, o
     folhaInvalida = 0
     contador = 1
     
-    #APENAS PARA EXTRAIR ASSINATURAS
-    nassin = 1
     
     # tesseract configuration
     custom_config = r'--oem 3 --psm 6 outputbase digits'
@@ -192,26 +201,20 @@ def processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, o
                     print("*****************************************************************")
                     out_ilegivel += 1
                     numero_Aluno = 0
-                
-                #print(numero_Aluno)
     
                 assinatura = Aluno[int(round(altura * 0.25)):int(round(altura * 0.94)),
                                      int(round(larg * 0.74)):int(round(larg * 0.97))]
-                assinado, incerto = verificaAssinatura(assinatura, codigoAula, nassin)
-                #TESTE ASSINATURAS
-                nassin += 1
+                assinado = verificaAssinatura(assinatura)
+
                 todosAlunos.append(numero_Aluno)
                 if assinado:
                     ff.folhaFinal(imgFinal, roiAlunosLinhas[r], Yi, imgCerto)
                     alunosPresentes.append(numero_Aluno)
-                if incerto:
-                    #print(str(contador) + " - " + str(numero_Aluno) + " = Assinatura incerta, verificar")
-                    out_incerto += 1
                 elif assinado:
-                    #print(str(contador) + " - " + str(numero_Aluno) + " = PRESENTE")
+                    print(str(contador) + " - " + str(numero_Aluno) + " = PRESENTE")
                     out_presente += 1
                 else:
-                    #print(str(contador) + " - " + str(numero_Aluno))
+                    print(str(contador) + " - " + str(numero_Aluno))
                     out_ausente += 1
                 contador += 1
 
