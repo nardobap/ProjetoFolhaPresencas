@@ -59,4 +59,8 @@ Checks if the file "modelsignature.joblib" that corresponds to the model for cla
 
 
 ## fourth
-yada
+For a correct reading, the sheets must comply with some requirements:
+* Minimum resolution: 300 dpi. 400 dpi or more is recommended for best results.
+* Orientation preserved
+* Black and white
+* It should not be hole-punched
