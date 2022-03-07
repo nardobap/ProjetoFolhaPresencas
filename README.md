@@ -32,7 +32,7 @@
 
 It's useful to have all the frameworks used available at your local machine if you want to test it:
 
->$ pip install -U scikit-learn numpy opencv-python pandas pyzbar matplotlib seaborn pytesseract imutils pdf2image
+`$ pip install -U scikit-learn numpy opencv-python pandas pyzbar matplotlib seaborn pytesseract imutils pdf2image`
 
 It is also required to have Tessaract installed: [Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html)
 Tesseract has some dependencies so it is recommended to read the installation manual.
@@ -52,7 +52,7 @@ This project will be combined with another to establish the connection of the ap
 
 ## User's manual
 The program is executed from the command line: 
->$ python main.py [path]
+`$ python main.py [path]`
 
 The argument with the directory path is optional. If left blank, the program starts from the project directory where the program runs. If a specific directory is entered, it is validated, and all subdirectories are scrolled through. If valid, it puts in an array all the file addresses that correspond to files of type .jpeg. Otherwise, the programme ends
 
