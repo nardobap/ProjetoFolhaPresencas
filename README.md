@@ -7,7 +7,7 @@
 1. [Prerequisites](#project-description)
 2. [Project description](#users-manual)
 3. [User's manual](#users-manual)
-4. [Fourth Example](#fourth)
+4. [Advice for use](#advice-for-use)
 
 
 
@@ -35,6 +35,7 @@ It's useful to have all the frameworks used available at your local machine if y
 >$ pip install -U scikit-learn numpy opencv-python pandas pyzbar matplotlib seaborn pytesseract imutils pdf2image
 
 It is also required to have Tessaract installed: [Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html)
+Tesseract has some dependencies so it is recommended to read the installation manual.
 
 
 ## Project description
@@ -58,7 +59,7 @@ The argument with the directory path is optional. If left blank, the program sta
 Checks if the file "modelsignature.joblib" that corresponds to the model for classifying signatures exists in the directory or its subdirectories. If the file does not exist, the model is trained using the datasets - make sure they are in the root directory of the project in a folder called "input".
 
 
-## fourth
+## Advice for use
 For a correct reading, the sheets must comply with some requirements:
 * Minimum resolution: 300 dpi. 400 dpi or more is recommended for best results.
 * Orientation preserved
