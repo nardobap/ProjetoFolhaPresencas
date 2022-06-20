@@ -18,7 +18,6 @@
 | Library       | Version used     | 
 | ------------- |:-------------:| 
 | Imutils |	0.5.4 |
-| Matplotlib |	3.4.2|
 | Numpy	|1.20.3|
 | OpenCV	|4.5.3|
 | Pandas	|1.3.2|
@@ -32,7 +31,7 @@
 
 It's useful to have all the frameworks used available at your local machine if you want to test it:
 
-`$ pip install -U scikit-learn numpy opencv-python pandas pyzbar matplotlib seaborn pytesseract imutils pdf2image`
+`$ pip install -U scikit-learn numpy opencv-python pandas pyzbar seaborn pytesseract imutils pdf2image`
 
 It is also required to have Tessaract installed: [Tesseract](https://tesseract-ocr.github.io/tessdoc/Home.html)
 Tesseract has some dependencies so it is recommended to read the installation manual.
