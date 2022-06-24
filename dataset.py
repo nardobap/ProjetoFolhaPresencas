@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Construir dataset de imagens
-
-# ## Dataset treino e dataset teste
-
-# In[1]:
-
-
 import pdfparajpeg
 #imports and versions
 import platform
@@ -16,9 +6,6 @@ import sys
 print(sys.version)
 import numpy as np
 print(np.__version__)
-import matplotlib
-print(matplotlib.__version__)
-from matplotlib import pyplot as plt
 import cv2
 print(cv2.__version__)
 import pandas as pd

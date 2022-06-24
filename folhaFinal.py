@@ -1,5 +1,7 @@
 import cv2
 
+# as seguintes funcoes fazem sentido na solucao de uma folha de cada vez
+
 def carregaImagemCerto():
     #carrega imagem do certo com o formato RGB para ser inserido na imagem final
     certoImg = cv2.imread("certo.png")

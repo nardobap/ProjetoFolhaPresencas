@@ -4,9 +4,8 @@ import imutils
 import numpy as np
 import folhaPresenca
 import pytesseract
-import folhaFinal as ff
-from joblib import load, dump
-import sklearn
+import assinaturas_validar
+import statistics
 from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import StandardScaler
 
@@ -21,11 +20,7 @@ def encontraNumeroAluno(imgAluno):
     thresh = cv2.threshold(src, 0, 255,
                            cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
     dst = cv2.GaussianBlur(thresh,(5,5),cv2.BORDER_DEFAULT)
-    #plt.figure()
     notGray = cv2.bitwise_not(dst)
-    #plt.imshow(notGray, cmap="gray")
-    #plt.show()
-    #print("THIS")
 
     #Aplica um close ao nr de aluno
     rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (15, 3))
@@ -55,7 +50,6 @@ def encontraNumeroAluno(imgAluno):
     return roi
 
 
-
 def confirmaAssinatura(assinatura):
     #Confirma se realmente existe uma assinatura, através do seu tamanho
     assinaturaGrey = cv2.cvtColor(assinatura, cv2.COLOR_BGR2GRAY)
@@ -80,36 +74,32 @@ def confirmaAssinatura(assinatura):
     return coord
 
 
-def verificaAssinatura(assinatura):
-    assinado = False
-    #dar tamanho fixo
-    img_sized = cv2.resize(assinatura, (215,30))
-    #converter para um canal BW
-    gray = cv2.cvtColor(img_sized, cv2.COLOR_BGR2GRAY)
-    #blur - reduzir ruído e contornos
-    blur = cv2.GaussianBlur(gray, (3,3), 0)
-    #truncar pixels abaixo de valor - redução de ruido
-    ret, thresh = cv2.threshold(blur, 240, 255, cv2.THRESH_TRUNC)
+def verificaAssinatura(assinatura, X_train, y_train, mlp):
+    assinado = 0
+    #recorre as transformacoes da imagem
+    img_trf = utils.img_transformation(assinatura)
     
-    #TODO:
-    #COLOCAR AQUI CODIGO
     # percorre a imagem da assinatura e soma as linhas e as colunas
-    sum_of_rows = np.sum(thresh, axis = 1)
-    sum_of_columns = np.sum(thresh, axis = 0)
+    sum_of_rows = np.sum(img_trf, axis = 1)
+    sum_of_columns = np.sum(img_trf, axis = 0)
     
     #concatena as somas e transpoe para vector
     vector_img = np.concatenate((sum_of_rows, sum_of_columns))
-    signature = np.transpose(vector_img)
+
+    vector_img = np.array(vector_img)[np.newaxis]
+    #print("DEPOIS TRANPOSE")
+    #print(vector_img.shape)
     
     # standardiza os valores das somas
-    X_test = StandardScaler().fit_transform(signature)
-    print(X_test)
+    vector_img = StandardScaler().fit_transform(vector_img)
+    #print(vector_img)
     
     #carrega o modelo
-    mlp = load("modelsignature.joblib")
+    #mlp.fit(X_train, y_train)
+    assinado = mlp.predict(vector_img)
     
     #devolve a label atribuida
-    assinado = mlp.predict(X_test)
+    print(assinado)
     
     return assinado
 
@@ -141,18 +131,16 @@ def extraiLinhasAlunosIndividual(linhasHorizontais, roiAlunosLinhas):
     return linhasAlunosFinal
 
 
-def processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula):
+def processaAlunos(img, X_train, y_train, mlp, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula):
     todosAlunos = []
     alunosPresentes = []
-    imgFinal = img.copy()
-    imgCerto = ff.carregaImagemCerto()
+    folhaInvalida = 0
+    contador = 1
+
 
     linhasHorizontais, linhas = folhaPresenca.filtroDeLinhas(img)
     roiAlunos, roiAlunosLinhas = folhaPresenca.encontraTabelasAlunos(img, linhas)
 
-    folhaInvalida = 0
-    contador = 1
-    
     
     # tesseract configuration
     custom_config = r'--oem 3 --psm 6 outputbase digits'
@@ -204,13 +192,15 @@ def processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, o
     
                 assinatura = Aluno[int(round(altura * 0.25)):int(round(altura * 0.94)),
                                      int(round(larg * 0.74)):int(round(larg * 0.97))]
-                assinado = verificaAssinatura(assinatura)
+                
+                #usa o classificador para ver se assinatura esta presente
+                assinado = verificaAssinatura(assinatura, X_train, y_train, mlp)
 
                 todosAlunos.append(numero_Aluno)
                 if assinado:
-                    ff.folhaFinal(imgFinal, roiAlunosLinhas[r], Yi, imgCerto)
+                    # comentado porque faz sentido apenas se ler uma folha de cada vez
+                    # ff.folhaFinal(imgFinal, roiAlunosLinhas[r], Yi, imgCerto)
                     alunosPresentes.append(numero_Aluno)
-                elif assinado:
                     print(str(contador) + " - " + str(numero_Aluno) + " = PRESENTE")
                     out_presente += 1
                 else:
@@ -229,9 +219,7 @@ def processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, o
         if folhaInvalida > len(todosAlunos):
             out_problemas += 1
             quit("folha com problemas")
-
-    imgFinal = cv2.resize(imgFinal, (1000, 1200))
-    #cv2.imshow("imagem Final", imgFinal)
+            
     count_alunos += len(todosAlunos)
     return todosAlunos, alunosPresentes, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas
 
