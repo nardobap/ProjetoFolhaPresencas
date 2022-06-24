@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Reconhecer assinatura ou rasura
-
-# In[1]:
-
-
 #imports and versions
 import platform
 #print(platform.platform())
@@ -13,8 +5,6 @@ import sys
 #print(sys.version)
 import numpy as np
 #print(np.__version__)
-import matplotlib
-#print(matplotlib.__version__)
 import cv2
 #print(cv2.__version__)
 import pandas as pd
@@ -48,24 +38,30 @@ def find_model(filename):
 
 
 # In[3]:
-
-def treina_classificador():
+    
+    
+def load_training_data():
     #ler dados treino e teste
     #pd.read_csv tem como separador default a virgula
     train_data = pd.read_csv("./input/assinaturas_treino.csv")
-
+    
     X_train = np.array(train_data.iloc[:,1:])
     y_train = np.array(train_data.iloc[:,0])
 
+     
     from sklearn.preprocessing import StandardScaler
     X_train = StandardScaler().fit_transform(X_train)
     
-    from sklearn.neural_network import MLPClassifier
-    mlp = MLPClassifier(hidden_layer_sizes=[100])
-    mlp.fit(X_train, y_train)
+    return X_train, y_train
+
+
+def classifier_training():
+    X_train, y_train= load_training_data()
     
-    from joblib import dump
-    dump(mlp, "modelsignature.joblib")
+    from sklearn.neural_network import MLPClassifier
+    mlp = MLPClassifier(activation="relu", alpha=0.05, hidden_layer_sizes=[100], learning_rate="invscaling")
+    mlp.fit(X_train, y_train)
+    return mlp
   
 
 # In[15]:
@@ -114,16 +110,15 @@ def testa_classificador():
     # In[25]:
     
     
-    test_data.shape
+    print(X_test.shape)
+    
     
     
     # In[26]:
     
-    
-    y_train
-    
-    
-    # ## Standardização
+
+        
+    ## Standardização
     
     # In[27]:
     
@@ -133,116 +128,114 @@ def testa_classificador():
     X_test = StandardScaler().fit_transform(X_test)
     
     #verifica se for standardizado
-    print (X_train)
+    print (X_test)
+        
+    
+    # # ## MLP Classifier
+    
+    # # In[28]:
     
     
-    # ## MLP Classifier
-    
-    # In[28]:
-    
-    
-    from sklearn.neural_network import MLPClassifier
-    mlp = MLPClassifier(hidden_layer_sizes=[100])
-    mlp.fit(X_train, y_train)
-    y_pred = mlp.predict(X_test)
+    # from sklearn.neural_network import MLPClassifier
+    # mlp = MLPClassifier(hidden_layer_sizes=[100])
+    # mlp.fit(X_train, y_train)
+    # y_pred = mlp.predict(X_test)
     
     
-    # In[29]:
+    # # In[29]:
     
     
-    print("MLP")
-    print(metrics.classification_report(y_test, y_pred))
-    accuracy = metrics.accuracy_score(y_test, y_pred)
-    average_accuracy = np.mean(y_test == y_pred) * 100
-    print("The average accuracy is {0:.3f}%".format(average_accuracy))
+    # print("MLP")
+    # print(metrics.classification_report(y_test, y_pred))
+    # accuracy = metrics.accuracy_score(y_test, y_pred)
+    # average_accuracy = np.mean(y_test == y_pred) * 100
+    # print("The average accuracy is {0:.3f}%".format(average_accuracy))
     
     
-    # In[30]:
+    # # In[30]:
     
     
-    print("Confusion Matrix:")
-    cf_mat = confusion_matrix(y_test, y_pred)
-    print(cf_mat)
-    print(f"\n")
+    # print("Confusion Matrix:")
+    # cf_mat = confusion_matrix(y_test, y_pred)
+    # print(cf_mat)
+    # print(f"\n")
     
-    #sns.heatmap(cf_mat/np.sum(cf_mat), annot=True, fmt='.2%', cmap="Blues")
-    cf_matrix.make_confusion_matrix(cf_mat, group_names=labels, categories=categories, cmap="Blues")
+    # #sns.heatmap(cf_mat/np.sum(cf_mat), annot=True, fmt='.2%', cmap="Blues")
+    # cf_matrix.make_confusion_matrix(cf_mat, group_names=labels, categories=categories, cmap="Blues")
     
+        
     
+    # # In[26]:
+   
     
-    
-    
-    # In[26]:
-    
-    
-    model = keras.Sequential([
-        keras.layers.Dense(100, activation='relu'),
-        keras.layers.Dense(10, activation='softmax')
-    ])
+    # model = keras.Sequential([
+    #     keras.layers.Dense(100, activation='relu'),
+    #     keras.layers.Dense(10, activation='softmax')
+    # ])
     
     
-    # In[27]:
+    # # In[27]:
     
     
-    model.compile(optimizer='adam',
-                 loss='sparse_categorical_crossentropy',
-                 metrics=['accuracy'])
+    # model.compile(optimizer='adam',
+    #              loss='sparse_categorical_crossentropy',
+    #              metrics=['accuracy'])
+    
+  
     
     
+    # # In[28]:
     
     
-    # In[28]:
+    # model.fit(X_train, y_train, epochs=18)
     
     
-    model.fit(X_train, y_train, epochs=18)
+    # # In[29]:
     
     
-    # In[29]:
+    # test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
     
     
-    test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
+    # # In[30]:
     
     
-    # In[30]:
+    # print(f"\nTest accuracy: {test_acc:.2%}\n")
     
     
-    print(f"\nTest accuracy: {test_acc:.2%}\n")
+    # # ## SVM Classifier
+    
+    # # In[55]:
     
     
-    # ## SVM Classifier
-    
-    # In[55]:
-    
-    
-    svc = svm.SVC(C=15, kernel='rbf', gamma=0.01)
-    svc.fit(X_train, y_train)
-    y_pred = svc.predict(X_test)
+    # svc = svm.SVC(C=15, kernel='rbf', gamma=0.01)
+    # svc.fit(X_train, y_train)
+    # y_pred = svc.predict(X_test)
     
     
-    # In[56]:
+    # # In[56]:
     
     
-    print('Support Vector Machines - SVM')
-    print(metrics.classification_report(y_test, y_pred))
-    accuracy = metrics.accuracy_score(y_test, y_pred)
-    average_accuracy = np.mean(y_test == y_pred) * 100
-    print('The average accuracy is {0:.1f}%'.format(average_accuracy))
+    # print('Support Vector Machines - SVM')
+    # print(metrics.classification_report(y_test, y_pred))
+    # accuracy = metrics.accuracy_score(y_test, y_pred)
+    # average_accuracy = np.mean(y_test == y_pred) * 100
+    # print('The average accuracy is {0:.1f}%'.format(average_accuracy))
     
     
-    # In[57]:
+    # # In[57]:
     
     
-    print("Confusion Matrix:")
-    cf_mat_svm = confusion_matrix(y_test, y_pred)
-    print(cf_mat_svm)
-    print(f"\n")
-    cf_matrix.make_confusion_matrix(cf_mat_svm, group_names=labels, categories=categories, cmap="Blues")
+    # print("Confusion Matrix:")
+    # cf_mat_svm = confusion_matrix(y_test, y_pred)
+    # print(cf_mat_svm)
+    # print(f"\n")
+    # cf_matrix.make_confusion_matrix(cf_mat_svm, group_names=labels, categories=categories, cmap="Blues")
     
     
     
-    # In[58]:
-    from joblib import dump
-    dump(mlp, "modelsignature.joblib")
+    # # In[58]:
+    # from joblib import dump
+    # dump(mlp, "modelsignature.joblib")
 
 
 

@@ -8,16 +8,31 @@ import utils
 import sys
 import shutil
 import os
-import assinaturas_validar
+from assinaturas_validar import load_training_data, classifier_training
 
 
 # MULTIPLE PHOTOS
 
-
 if __name__ == '__main__':
     
-        
+    #Array to store all filepaths  
     arfiles = []
+    
+    #aux variables        
+    out_codigo_barras = 0
+    out_leitura_cabecalho = 0
+    out_alinhamento = 0
+    count_alunos = 0
+    out_ilegivel = 0
+    out_incerto = 0
+    out_presente = 0
+    out_ausente = 0
+    out_erro_num = 0
+    out_problemas = 0
+    
+    #log array
+    folhas_erros = []
+    
     # sem argumento significa que corre do mesmo directorio
     if len(sys.argv) == 1:
         arfiles = pdfparajpeg.find_jpg(".")
@@ -31,35 +46,20 @@ if __name__ == '__main__':
     if  len(arfiles) == 0:
         sys.exit("Nao foram encontradas imagens")
     else:
-        print(f"O ARRAY TEM {len(arfiles)} IMAGENS!!!")
-        
-    out_codigo_barras = 0
-    out_leitura_cabecalho = 0
-    out_alinhamento = 0
-    count_alunos = 0
-    out_ilegivel = 0
-    out_incerto = 0
-    out_presente = 0
-    out_ausente = 0
-    out_erro_num = 0
-    out_problemas = 0
-    folhas_erros = []
-    
-    
-    # If a classification model exists
-    if (assinaturas_validar.find_model("modelsignature.joblib")):
-        print("ENCONTREI")
-    else:
-        print("Treino do modelo: ")
-        assinaturas_validar.treina_classificador()
-        print("Concluido")
+        print(f"Foram encontradas {len(arfiles)} imagens")
         
     
-
+    # Classifier
+    # loads training data
+    X_train, y_train = load_training_data()
+    # creates model
+    mlp = classifier_training()
+        
+    
     i = 1
     for imgs in arfiles:
-        print(f"ITERA {i} **** FALTAM {len(arfiles) - i} IMAGENS!!!")
-        print(imgs)
+        print(f"\n{i} - Filedir:" + imgs + f" **** Faltam {len(arfiles) - i} folhas")
+        
         img = folhaPresenca.carregaImagem(imgs)
         img, out_leitura_cabecalho, out_alinhamento = folhaPresenca.corrigeAlinhamento(img,out_leitura_cabecalho,out_alinhamento)
         codigoAula = CB.processaCodigoBarras(img, imgs)
@@ -67,11 +67,11 @@ if __name__ == '__main__':
             out_codigo_barras = out_codigo_barras + 1
             folhas_erros.append(imgs)
             i=i+1
-            shutil.move(imgs,"./erroscb")
+            
             continue
         else:
             try:
-                todosAlunos, alunosPresentes, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas = alunos.processaAlunos(img, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula)
+                todosAlunos, alunosPresentes, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas = alunos.processaAlunos(img, X_train, y_train, mlp, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula)
                 csv.criaCSVFile(alunosPresentes, codigoAula)
                 i=i+1
             except:
