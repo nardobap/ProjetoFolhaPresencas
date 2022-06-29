@@ -51,7 +51,7 @@ if __name__ == '__main__':
     
     # Classifier
     # loads training data
-    X_train, y_train = load_training_data()
+    X_train, y_train, scaler = load_training_data()
     # creates model
     mlp = classifier_training()
         
@@ -71,7 +71,7 @@ if __name__ == '__main__':
             continue
         else:
             try:
-                todosAlunos, alunosPresentes, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas = alunos.processaAlunos(img, X_train, y_train, mlp, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula)
+                todosAlunos, alunosPresentes, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas = alunos.processaAlunos(img, X_train, y_train, mlp, scaler, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula)
                 csv.criaCSVFile(alunosPresentes, codigoAula)
                 i=i+1
             except:

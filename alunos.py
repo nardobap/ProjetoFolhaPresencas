@@ -74,7 +74,7 @@ def confirmaAssinatura(assinatura):
     return coord
 
 
-def verificaAssinatura(assinatura, X_train, y_train, mlp):
+def verificaAssinatura(assinatura, X_train, y_train, mlp, scaler):
     assinado = 0
     #recorre as transformacoes da imagem
     img_trf = utils.img_transformation(assinatura)
@@ -86,13 +86,14 @@ def verificaAssinatura(assinatura, X_train, y_train, mlp):
     #concatena as somas e transpoe para vector
     vector_img = np.concatenate((sum_of_rows, sum_of_columns))
 
+#TODO
     vector_img = np.array(vector_img)[np.newaxis]
     #print("DEPOIS TRANPOSE")
-    #print(vector_img.shape)
+    print(vector_img.shape)
     
     # standardiza os valores das somas
-    vector_img = StandardScaler().fit_transform(vector_img)
-    #print(vector_img)
+    vector_img = scaler.transform(vector_img)
+    print(vector_img)
     
     #carrega o modelo
     #mlp.fit(X_train, y_train)
@@ -131,7 +132,7 @@ def extraiLinhasAlunosIndividual(linhasHorizontais, roiAlunosLinhas):
     return linhasAlunosFinal
 
 
-def processaAlunos(img, X_train, y_train, mlp, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula):
+def processaAlunos(img, X_train, y_train, mlp, scaler, count_alunos, out_ilegivel, out_incerto, out_presente, out_ausente, out_erro_num, out_problemas, codigoAula):
     todosAlunos = []
     alunosPresentes = []
     folhaInvalida = 0
@@ -194,7 +195,7 @@ def processaAlunos(img, X_train, y_train, mlp, count_alunos, out_ilegivel, out_i
                                      int(round(larg * 0.74)):int(round(larg * 0.97))]
                 
                 #usa o classificador para ver se assinatura esta presente
-                assinado = verificaAssinatura(assinatura, X_train, y_train, mlp)
+                assinado = verificaAssinatura(assinatura, X_train, y_train, mlp, scaler)
 
                 todosAlunos.append(numero_Aluno)
                 if assinado:

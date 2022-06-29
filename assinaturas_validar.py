@@ -50,13 +50,14 @@ def load_training_data():
 
      
     from sklearn.preprocessing import StandardScaler
-    X_train = StandardScaler().fit_transform(X_train)
+    scaler = StandardScaler().fit(X_train)
+    X_train = scaler.transform(X_train)
     
-    return X_train, y_train
+    return X_train, y_train, scaler
 
 
 def classifier_training():
-    X_train, y_train= load_training_data()
+    X_train, y_train, scaler = load_training_data()
     
     from sklearn.neural_network import MLPClassifier
     mlp = MLPClassifier(activation="relu", alpha=0.05, hidden_layer_sizes=[100], learning_rate="invscaling")
