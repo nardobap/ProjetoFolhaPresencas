@@ -55,7 +55,7 @@ The program is executed from the command line:
 
 The argument with the directory path is optional. If left blank, the program starts from the project directory where the program runs. If a specific directory is entered, it is validated, and all subdirectories are scrolled through. If valid, it puts in an array all the file addresses that correspond to files of type .jpeg. Otherwise, the programme ends
 
-Checks if the file "modelsignature.joblib" that corresponds to the model for classifying signatures exists in the directory or its subdirectories. If the file does not exist, the model is trained using the datasets - make sure they are in the root directory of the project in a folder called "input".
+The model is trained using the datasets - make sure they are in the root directory of the project in a folder named "input".
 
 
 ## Advice for use
