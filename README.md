@@ -2,7 +2,7 @@
 
 ### Projecto Licenciatura DEIS-ISEC
 ### Bernardo Baptista - 2018013802
-### Work published: [Lopes, J.A.P.; Baptista, B.; Lavado, N.; Mendes, M. Offline Handwritten Signature Verification Using Deep Neural Networks. Energies 2022, 15, 7611](https://www.mdpi.com/1996-1073/15/20/7611
+### Work published: [Lopes, J.A.P.; Baptista, B.; Lavado, N.; Mendes, M. Offline Handwritten Signature Verification Using Deep Neural Networks. Energies 2022, 15, 7611](https://www.mdpi.com/1996-1073/15/20/7611)
 ***
 ## Table of Contents
 1. [Prerequisites](#project-description)
